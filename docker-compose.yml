@@ -1,35 +1,24 @@
-# # docker-compose.yml
-# version: "3.8"
-# services:
-#    frontend:
-#      build:
-#        context: .
-#        dockerfile: Dockerfile
-#      volumes:
-#        - ./:/app
-#       #  - /node_modules
-#      ports:
-#        - 3000:3000
-#      environment:
-#        - CHOKIDAR_USEPOLLING=true
+
 version: "3.8"
 services:
   etherpad:
+    image: etherpad.azurecr.io/etherpad
     container_name: etherpad
     restart: always
-    image: etherpad/etherpad:latest
+    build:
+      context: ./etherpad  
+      dockerfile: Dockerfile
     ports:
-      - "9000:9001"
-    environment:
-      PORT: '9001'
+      - "9001:9001"
     networks:
       - my_network
 
   react-app:
+    image: etherpad.azurecr.io/react-app
     container_name: react-app
     restart: always
     build:
-      context: . # Directory where the React app is located
+      context: .
       dockerfile: Dockerfile
     volumes:
        - ./:/app
@@ -42,6 +31,7 @@ services:
       - my_network
 
   backend:  
+    image: etherpad.azurecr.io/backend
     container_name: backend
     build:
       context: ./backend  
@@ -56,11 +46,12 @@ services:
       - my_network
 
   nginx:
+    image: etherpad.azurecr.io/nginx
     container_name: nginx
     restart: always
-    image: nginx:1.21-alpine
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     networks:
